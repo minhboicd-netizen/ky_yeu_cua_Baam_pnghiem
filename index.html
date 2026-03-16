@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thiệp Kỷ Yếu của Baam - Lớp Chuyên Tin LQD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Great+Vibes&family=Montserrat:wght@400;500;600;700&family=Philosopher:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy-dark: #0A192F; --navy-medium: #112240; --gold: #D4AF37;
+      --night-sky-top: #010813; --night-sky-bottom: #0b1d36;
+      --paper-white: #f8f8fc; --text-night: #0A192F;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+      min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden;
+      user-select: none; 
+    }
+
+    /* --- PHONG BÌ SANG TRỌNG --- */
+    .envelope-wrapper { position: relative; width: 520px; height: 360px; cursor: pointer; transition: all 1s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 20; pointer-events: auto; }
+    .envelope-wrapper.hide { opacity: 0; pointer-events: none; transform: translateY(150px) scale(0.85); }
+    
+    .bling { position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%; box-shadow: 0 0 8px 3px rgba(255,255,255,1), 0 0 18px 6px rgba(255,215,0,0.8); animation: twinkle 2.5s infinite ease-in-out alternate; z-index: 7; pointer-events: none; }
+    @keyframes twinkle { 0% { opacity: 0.1; transform: scale(0.4); } 100% { opacity: 1; transform: scale(1.5); } }
+    
+    .envelope { position: relative; width: 100%; height: 100%; background: var(--navy-medium); border-radius: 4px; box-shadow: 0 30px 70px rgba(0,0,0,0.8); background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); pointer-events: none; }
+    .flap { position: absolute; top: 0; left: 0; border-left: 260px solid transparent; border-right: 260px solid transparent; border-top: 190px solid var(--navy-dark); transform-origin: top; transition: transform 0.7s 0.1s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s; z-index: 4; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3)); }
+    .pocket { position: absolute; bottom: 0; left: 0; border-left: 260px solid #0f2b4d; border-right: 260px solid #0f2b4d; border-bottom: 180px solid #14365d; z-index: 3; border-radius: 0 0 4px 4px; }
+    
+    /* --- CON DẤU SÁP ĐỎ (HÌNH TRÒN HOÀN HẢO) --- */
+    .seal-badge { 
+      position: absolute; top: 190px; left: 50%; transform: translate(-50%, -50%); 
+      width: 90px; height: 90px; z-index: 8; 
+      border-radius: 50%; 
+      background: radial-gradient(circle at 35% 25%, #D74444 0%, #A31D1D 40%, #520909 100%);
+      box-shadow: 
+        0 10px 20px rgba(0,0,0,0.6), 
+        inset 4px 4px 10px rgba(255, 140, 140, 0.35), 
+        inset -4px -6px 12px rgba(40, 0, 0, 0.8); 
+      display: flex; justify-content: center; align-items: center;
+      transition: transform 0.3s; 
+    }
+    
+    /* Vết lõm khuôn dấu tròn */
+    .seal-badge::before {
+      content: ''; position: absolute;
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, #6B0F0F, #951818);
+      box-shadow: 
+        inset 4px 4px 8px rgba(0,0,0,0.8), 
+        inset -2px -2px 6px rgba(215, 68, 68, 0.25), 
+        0 1px 3px rgba(215, 68, 68, 0.4); 
+      z-index: -1;
+    }
+
+    /* Chữ in dập nổi */
+    .seal-badge span {
+      font-family: 'Great Vibes', cursive;
+      color: #C02A2A; 
+      font-size: 2.2rem; line-height: 0.85; text-align: center;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.7), -1px -1px 1px rgba(255,140,140,0.4);
+      transform: rotate(-8deg); 
+    }
+    
+    .env-text { position: absolute; bottom: 30px; width: 100%; text-align: center; color: var(--gold); font-family: 'Cinzel', serif; font-size: 1.3rem; letter-spacing: 2px; z-index: 5; text-shadow: 0 0 10px rgba(212, 175, 55, 0.8), 0 3px 6px rgba(0,0,0,0.6); pointer-events: none; }
+    .env-text span { font-family: 'Great Vibes', cursive; font-size: 3.5rem; display: block; margin-top: 5px; font-weight: normal; text-transform: none; letter-spacing: 1px; }
+    .envelope-wrapper.open .flap { transform: rotateX(180deg); z-index: 1; }
+    .envelope-wrapper.open .seal-badge { opacity: 0; transition: opacity 0.2s; }
+
+    /* ================= CẤU TRÚC 4 LỚP ================= */
+    .letter-container { position: absolute; width: 380px; height: 580px; top: 50%; left: 50%; transform: translate(-50%, -20%) scale(0.6); opacity: 0; z-index: 2; transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
+    .letter-container.pop-out { transform: translate(-50%, -50%) scale(1); opacity: 1; z-index: 30; pointer-events: auto; }
+    .card-inner { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 12px; box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 40px rgba(212, 175, 55, 0.2); background: transparent; }
+
+    /* LỚP 1: NỀN ĐÊM & HẠT MA THUẬT LẤP LÁNH */
+    .layer-1-night-bg { position: absolute; top:0; left:0; width:100%; height:100%; z-index: 1; background: linear-gradient(to bottom, var(--night-sky-top) 30%, var(--night-sky-bottom) 100%); pointer-events: none; }
+    .stars-svg { position: absolute; top: 0; left: 0; width: 100%; height: 60%; opacity: 0.8; animation: twinkleStars 4s infinite alternate; filter: drop-shadow(0 0 5px #fff); }
+    @keyframes twinkleStars { 0% { opacity: 0.4; } 100% { opacity: 1; } }
+    .night-waves-svg { position: absolute; bottom: 0; left: 0; width: 100%; height: 120px; z-index: 1; opacity: 0.5; }
+
+    .magical-sparkle {
+      position: absolute; width: 2px; height: 2px; background: #fff;
+      border-radius: 50%; z-index: 2; pointer-events: none;
+      box-shadow: 0 0 8px 3px var(--gold), 0 0 15px 5px rgba(255,255,255,0.9);
+      animation: floatSparkle infinite ease-in-out alternate;
+    }
+    @keyframes floatSparkle {
+      0% { transform: translateY(0) scale(0.2); opacity: 0; }
+      50% { opacity: 1; transform: translateY(-30px) scale(1.2); }
+      100% { transform: translateY(-60px) scale(0.5); opacity: 0; }
+    }
+
+    /* LỚP 2: GIẤY TRẮNG RÁCH */
+    .layer-2-torn-paper {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 82%; height: 72%; z-index: 2; background-color: var(--paper-white);
+        filter: url(#torn-edge-filter-v3); box-shadow: 0 15px 40px rgba(0,0,0,0.6); pointer-events: none;
+    }
+
+    /* LỚP 3: CẢNH VẬT CỐ ĐỊNH */
+    .layer-3-scenery { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+    .detailed-moon { position: absolute; top: 4%; right: 4%; width: 55px; height: 55px; filter: drop-shadow(0 0 15px #FFF9C4); opacity: 0.95; transform: rotate(-35deg); }
+    .cliff-detailed-svg { position: absolute; bottom: 30px; left: -25px; width: 230px; height: auto; filter: drop-shadow(4px 4px 10px rgba(0,0,0,0.7)); z-index: 2;}
+    .lighthouse-group { position: absolute; bottom: 90px; left: 15px; z-index: 3; }
+    .light-beam-cone {
+        position: absolute; top: -52px; left: 30px; width: 300px; height: 150px;
+        background: radial-gradient(ellipse at left, rgba(255, 213, 79, 0.8) 0%, rgba(255, 213, 79, 0) 70%);
+        clip-path: polygon(0% 50%, 100% 0%, 100% 100%); transform-origin: 0% 50%;
+        opacity: 0.7; mix-blend-mode: screen; animation: sweepBeamNight 6s ease-in-out infinite alternate; z-index: 1;
+    }
+    @keyframes sweepBeamNight { 0% { transform: rotate(-25deg) scaleX(0.8); opacity: 0.4; } 100% { transform: rotate(15deg) scaleX(1.1); opacity: 0.8; } }
+
+    /* LỚP 4: KHUNG CHỨA NỘI DUNG CHỮ */
+    .layer-4-content-wrap { 
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 82%; height: 72%; z-index: 4; pointer-events: none; 
+    }
+
+    /* HIỆU ỨNG TRƯỢT SIÊU MƯỢT */
+    .page { 
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+        padding: 25px 20px 85px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        text-align: center; color: var(--text-night); 
+        transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); 
+        opacity: 0; transform: translateX(60px); z-index: 5; visibility: hidden; pointer-events: none;
+    }
+    .page.active { opacity: 1; transform: translateX(0); z-index: 10; visibility: visible; pointer-events: auto; }
+    .page.leave { opacity: 0; transform: translateX(-60px); z-index: 5; visibility: visible; }
+    
+    /* CHỮ PHÁT SÁNG & ĐỊNH DẠNG */
+    h1 { 
+        font-family: 'Philosopher', sans-serif; font-size: 3rem; color: var(--navy-dark); 
+        margin-bottom: 5px; line-height: 1.1; letter-spacing: 1px; position: relative; z-index: 2; 
+        text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); 
+    }
+    .subtitle { font-family: 'Montserrat', sans-serif; font-style: italic; color: #555; font-weight: 600; margin-bottom: 15px; font-size: 0.95rem; line-height: 1.5; position: relative; z-index: 2;}
+    h3 { 
+        font-family: 'Philosopher', sans-serif; font-size: 1.6rem; color: var(--navy-dark); 
+        margin-bottom: 15px; display: inline-block; border-bottom: 2px solid var(--gold); padding-bottom: 5px; 
+        text-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+    }
+    p { color: #333; line-height: 1.5; font-size: 0.9rem; margin-bottom: 15px; font-weight: 500; }
+    
+    .minimal-info { width: 100%; max-width: 250px; margin: 0 auto 15px auto; border-top: 1px solid rgba(10, 25, 47, 0.2); border-bottom: 1px solid rgba(10, 25, 47, 0.2); padding: 10px 0; pointer-events: none;}
+    .minimal-info .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.85rem; }
+    .minimal-info .info-row:last-child { margin-bottom: 0; }
+    .minimal-info strong { font-family: 'Philosopher', sans-serif; color: var(--navy-dark); text-align: left;}
+    .minimal-info span { text-align: right; color: #444; font-weight: 600;}
+
+    /* Sao Vàng Trang Trí */
+    .deco-star { position: absolute; fill: var(--gold); filter: drop-shadow(0 0 6px var(--gold)); animation: twinkleDeco 3s infinite alternate ease-in-out; pointer-events: none; z-index: 1; }
+    @keyframes twinkleDeco { 0% { opacity: 0.4; transform: scale(0.7); } 100% { opacity: 1; transform: scale(1.2) rotate(20deg); } }
+
+    /* NÚT BẤM PHÁT SÁNG */
+    .btn-group { margin-top: auto; display: flex; gap: 10px; width: 100%; justify-content: center; }
+    .btn { 
+        position: relative; z-index: 999; pointer-events: auto; padding: 10px 25px; 
+        background: var(--navy-dark); color: var(--gold); border: none; border-radius: 25px; 
+        font-family: 'Philosopher', sans-serif; font-size: 0.95rem; font-weight: bold; letter-spacing: 1px; 
+        cursor: pointer; transition: all 0.3s; 
+        box-shadow: 0 0 12px rgba(212, 175, 55, 0.5); 
+        animation: pulseBtn 2s infinite alternate;
+    }
+    @keyframes pulseBtn {
+        0% { box-shadow: 0 0 8px rgba(212, 175, 55, 0.3); }
+        100% { box-shadow: 0 0 18px rgba(212, 175, 55, 0.8), 0 0 30px rgba(255, 255, 255, 0.3); }
+    }
+    .btn:hover { transform: translateY(-3px); background: var(--gold); color: var(--navy-dark); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.8); animation: none; }
+    .btn-outline { background: transparent; color: var(--navy-dark); border: 2px solid var(--navy-dark); box-shadow: none; animation: none;}
+    .btn-outline:hover { background: var(--navy-dark); color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);}
+    
+    .svg-filters { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <svg class="svg-filters">
+    <defs>
+      <filter id="torn-edge-filter-v3"><feTurbulence type="fractalNoise" baseFrequency="0.05 0.02" numOctaves="4" result="noise" /><feDisplacementMap in="SourceGraphic" in2="noise" scale="22" xChannelSelector="R" yChannelSelector="G" /></filter>
+      <radialGradient id="bulb-glow"><stop offset="0%" stop-color="#FFF9C4"/><stop offset="100%" stop-color="rgba(255, 213, 79, 0)"/></radialGradient>
+    </defs>
+  </svg>
+
+  <div class="envelope-wrapper" id="env-wrapper" onclick="setup()">
+    <div class="bling" style="top: 8%; left: 15%; width: 5px; height: 5px;"></div>
+    <div class="bling" style="top: 18%; left: 35%;"></div>
+    <div class="bling" style="top: 45%; right: 8%; width: 6px; height: 6px; animation-delay: 1s;"></div>
+    <div class="bling" style="bottom: 12%; left: 20%; animation-delay: 0.5s;"></div>
+    <div class="bling" style="bottom: 25%; right: 25%; animation-delay: 1.5s;"></div>
+    <div class="bling" style="top: 20%; right: 30%; width: 3px; height: 3px; animation-delay: 0.8s;"></div>
+    
+    <div class="envelope">
+      <div class="flap"></div>
+      <div class="pocket"></div>
+      
+      <div class="seal-badge"><span>12<br>Tin</span></div>
+      
+      <div class="env-text">THPT Chuyên<br><span>Lê Quý Đôn</span></div>
+    </div>
+    
+    <div style="position:absolute; bottom:-45px; width:100%; text-align:center; color:#fff; font-style:italic; opacity: 0.9; letter-spacing: 1px; pointer-events: none; text-shadow: 0 0 8px #fff;">Chạm vào phong bì để mở</div>
+  </div>
+
+  <div class="letter-container" id="letter">
+    <div class="card-inner">
+      
+      <div class="layer-1-night-bg">
+          <svg class="stars-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="30" r="1.5" fill="#fff"/><circle cx="80" cy="10" r="1" fill="#fff"/><circle cx="150" cy="40" r="1.8" fill="#fff"/><path d="M50,50 L52,55 L57,57 L52,59 L50,64 L48,59 L43,57 L48,55 Z" fill="#fff" transform="scale(0.6)"/><circle cx="110" cy="80" r="1" fill="#fff"/><circle cx="180" cy="20" r="1.5" fill="#fff"/></svg>
+          <svg class="night-waves-svg" viewBox="0 0 400 100" preserveAspectRatio="none"><path d="M0,40 C100,20 200,60 400,40 L400,100 L0,100 Z" fill="#050a14"/><path d="M0,60 C150,80 250,30 400,60 L400,100 L0,100 Z" fill="#0a192f" opacity="0.7"/></svg>
+      </div>
+      
+      <div class="layer-2-torn-paper"></div>
+      
+      <div class="layer-3-scenery">
+        <svg class="detailed-moon" viewBox="0 0 50 50"><g fill="#FFF9C4"><path d="M25,0 C11.2,0 0,11.2 0,25 C0,38.8 11.2,50 25,50 C22,45 22,5 25,0 Z"/><circle cx="15" cy="15" r="3" fill="#FFE082" opacity="0.6"/><circle cx="10" cy="30" r="2" fill="#FFE082" opacity="0.6"/><circle cx="18" cy="38" r="4" fill="#FFE082" opacity="0.6"/></g></svg>
+        <svg class="cliff-detailed-svg" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><path d="M0,150 L180,150 L160,80 C140,60 100,90 60,70 L0,100 Z" fill="#0c121d"/><path d="M0,150 L150,150 L130,90 C110,80 80,110 40,90 L0,120 Z" fill="#1b2735"/><path d="M0,150 L120,150 L100,110 C80,100 50,120 20,110 L0,130 Z" fill="#2c3e50"/></svg>
+        <div class="lighthouse-group">
+            <div class="light-beam-cone"></div>
+            <svg class="lighthouse-svg" width="60" height="120" viewBox="0 0 60 120"><rect x="15" y="100" width="30" height="20" fill="#1b2735"/><path d="M20,100 L25,30 L35,30 L40,100 Z" fill="#37474f" stroke="#111827"/><rect x="18" y="30" width="24" height="4" fill="#111827"/><rect x="22" y="15" width="16" height="15" fill="#FFD54F"/><circle cx="30" cy="22.5" r="7" fill="url(#bulb-glow)"/><path d="M20,15 L40,15 L30,0 Z" fill="#1b2735"/></svg>
+        </div>
+      </div>
+
+      <div class="layer-4-content-wrap">
+        
+        <div class="page active" id="p1">
+          <svg class="deco-star" style="top: 15%; left: 8%; width: 18px;" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg class="deco-star" style="top: 10%; right: 12%; width: 14px; animation-delay: 1s;" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg class="deco-star" style="top: 38%; left: 10%; width: 12px; animation-delay: 0.5s;" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg class="deco-star" style="top: 30%; right: 8%; width: 10px; animation-delay: 1.5s;" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          
+          <h1 style="margin-top: auto;">Thư Mời<br>Kỷ Yếu</h1>
+          <p class="subtitle">- Kỷ yếu của Baam -<br><br> Lớp chuyên Tin - LQĐ <br>Niên khóa 2023 - 2026</p>
+          <div class="btn-group"><button class="btn" onclick="get('p1', 'p2')">Mở Thiệp</button></div>
+        </div>
+
+        <div class="page" id="p2">
+          <h3 style="margin-top: auto;">Lời Ngỏ</h3>
+          <p style="font - size: 1 rem; font-style: italic;">"Ba năm cấp 3 của tui có lẽ đã không thể trọn vẹn được nếu thiếu đi một người bạn KTX như bà, một người sẳn sàng tán chuyện với tui"</p>
+          <p style="text-align: justify; margin-bottom: 20px;">Vậy nên trân trọng kính mời người bạn cùng phòng PHƯƠNG NGHIÊM đến tham dự buổi chụp hình kỷ yếu của tui!</p>
+          <div class="btn-group">
+            <button class="btn btn-outline" onclick="get('p2', 'p1')">Trở lại</button>
+            <button class="btn" onclick="get('p2', 'p3')">Chi tiết</button>
+          </div>
+        </div>
+
+        <div class="page" id="p3">
+          <h3 style="margin-top: auto;">Thông Tin</h3>
+          <div class="minimal-info">
+            <div class="info-row"><strong>Lớp</strong><span>12 Tin</span></div>
+            <div class="info-row"><strong>Ngày</strong><span>19.04.2026</span></div>
+            <div class="info-row"><strong>Giờ</strong><span>10:00 - 11:30</span></div>
+            <div class="info-row"><strong>Tại</strong><span>Trường chuyên Lê Quý Đôn</span></div>
+          </div>
+          <p style="font-size: 0.80rem; font-style: italic; margin-bottom: 17px;"> *Lưu ý: Trước khi đến hãy check note fb, ins của tui hoặc gọi trực tiếp tui nhé! <br>  Tui mong chờ sự hiện diện của bạn lắm đó nghen<33</p>
+          <div class="btn-group">
+              <button class="btn btn-outline" onclick="get('p3', 'p2')">Trở lại</button>
+              <button class="btn" onclick="get('p3', 'p1')">Đóng</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function setup() {
+      let a = document.getElementById('env-wrapper');
+      let phu = document.getElementById('letter');
+      a.classList.add('open');
+      setTimeout(() => {
+        a.classList.add('hide');
+        phu.classList.add('pop-out');
+      }, 800);
+
+      // Hạt ma thuật lấp lánh bay lên
+      let D = document.querySelector('.layer-1-night-bg');
+      let n = 25;
+      for (let m = 0; m < n; m++) {
+        let P = document.createElement('div');
+        P.className = 'magical-sparkle';
+        let mx = Math.random() * 100;
+        let Q = Math.random() * 100;
+        P.style.left = mx + '%';
+        P.style.top = Q + '%';
+        P.style.animationDelay = (Math.random() * 3) + 's';
+        P.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        D.appendChild(P);
+      }
+    }
+
+    function get(id, targetId) {
+      let last = document.getElementById(id);
+      let phu = document.getElementById(targetId);
+      
+      if (last) {
+        last.classList.remove('active'); 
+        last.classList.add('leave');
+        setTimeout(() => { 
+            last.classList.remove('leave'); 
+        }, 800); 
+      }
+      if (phu) {
+        phu.classList.add('active'); 
+      }
+    }
+  </script>
+</body>
+</html>
